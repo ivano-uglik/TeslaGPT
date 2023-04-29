@@ -1,9 +1,14 @@
 import { useState } from "react";
-
+import SpeechRecognition from "./SpeechRecognition";
+import mic from "./assets/microphone.svg";
 const App = () => {
+  SpeechRecognition();
   const API_KEY = import.meta.env.VITE_API_KEY;
+  const [runsFunction, setRunsFunction] = useState(1);
   async function getMessage(message) {
     setIsLoading(true);
+    setRunsFunction(runsFunction + 1);
+    console.log(runsFunction);
     const response = await fetch("https://api.openai.com/v1/chat/completions", {
       method: "POST",
       headers: {
@@ -18,7 +23,7 @@ const App = () => {
             content: `${message}`,
           },
         ],
-        max_tokens: 100,
+        max_tokens: 1,
       }),
     });
 
@@ -57,7 +62,13 @@ const App = () => {
           className="p-[0.35rem] border border-black rounded-xl"
         />
       </form>
-      <div className="w-64 text-center">
+      {/* MICROPHONE  */}
+      <button className="border-black border-4 rounded-full p-8">
+        <img src={mic} alt="Microphone button" className="w-16" />
+        {/* on click start voice recognition, record input, feed input into API */}
+      </button>
+      {/* MICROPHONE END  */}
+      <div className="w-64 text-center pt-8">
         {isLoading ? (
           <p>Loading...</p>
         ) : answer ? (
