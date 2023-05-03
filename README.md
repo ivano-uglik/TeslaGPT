@@ -8,6 +8,6 @@ It uses `Web Speech API` to transcribe audio into text which is fed as a prompt 
 
 ### Features
 
-# TeslaGPT v0.0.1
+# TeslaGPT v0.1
 
-Currently, TeslaGPT supports prompting the API through a form and then a value returning underneath the form.
+Currently, TeslaGPT supports speech-to-text communication with the API

@@ -1,14 +1,10 @@
-import { useState } from "react";
-import SpeechRecognition from "./SpeechRecognition";
+import { useEffect, useState } from "react";
 import mic from "./assets/microphone.svg";
+import useSpeechRecognition from "./useSpeechRecognition";
 const App = () => {
-  SpeechRecognition();
   const API_KEY = import.meta.env.VITE_API_KEY;
-  const [runsFunction, setRunsFunction] = useState(1);
   async function getMessage(message) {
     setIsLoading(true);
-    setRunsFunction(runsFunction + 1);
-    console.log(runsFunction);
     const response = await fetch("https://api.openai.com/v1/chat/completions", {
       method: "POST",
       headers: {
@@ -20,10 +16,11 @@ const App = () => {
         messages: [
           {
             role: "user",
-            content: `${message}`,
+            content: `Repeat exactly what is said here, and nothing else -> ${message}`,
+            // content: `Repeat what i've said here: What is 1 + 1 ?`,
           },
         ],
-        max_tokens: 1,
+        max_tokens: 20,
       }),
     });
 
@@ -33,21 +30,23 @@ const App = () => {
   }
 
   const [formValue, setFormValue] = useState("");
-  const [answer, setAnswer] = useState();
+  const [answer, setAnswer] = useState("");
   const [isLoading, setIsLoading] = useState(false);
 
+  const { text, startListening, stopListening, isListening } =
+    useSpeechRecognition();
   return (
     <div className="grid place-items-center mt-8">
       <form
         method="post"
-        onSubmit={async (event) => {
+        onSubmit={(event) => {
           event.preventDefault();
           setIsLoading(true);
-          await getMessage(formValue);
+          getMessage(formValue);
           setFormValue("");
         }}
       >
-        <h2 className="text-center">Ask the API:</h2>
+        <h2 className="text-center">Pitaj TeslaGPT:</h2>
         <input
           type="text"
           placeholder="Enter prompt here..."
@@ -62,20 +61,19 @@ const App = () => {
           className="p-[0.35rem] border border-black rounded-xl"
         />
       </form>
-      {/* MICROPHONE  */}
-      <button className="border-black border-4 rounded-full p-8">
-        <img src={mic} alt="Microphone button" className="w-16" />
-        {/* on click start voice recognition, record input, feed input into API */}
+      <button
+        className="border-4 p-4"
+        onClick={() => {
+          console.log(`onclick ${text}`);
+          !isListening ? startListening() : (stopListening(), getMessage(text));
+        }}
+      >
+        <img src={mic} className="w-8 fa-microphone" id="mic" />
       </button>
-      {/* MICROPHONE END  */}
       <div className="w-64 text-center pt-8">
-        {isLoading ? (
-          <p>Loading...</p>
-        ) : answer ? (
-          <h1>{answer}</h1>
-        ) : (
-          <h1>empty</h1>
-        )}
+        {isLoading ? <p>Loading...</p> : answer ? <h1>{answer}</h1> : null}
+        {isListening ? <div>Speaking...</div> : null}
+        <>{text}</>
       </div>
     </div>
   );
