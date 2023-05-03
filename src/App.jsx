@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import mic from "./assets/microphone.svg";
+import micSlash from "./assets/microphoneSlash.svg";
 import useSpeechRecognition from "./useSpeechRecognition";
 const App = () => {
   const API_KEY = import.meta.env.VITE_API_KEY;
@@ -17,7 +18,6 @@ const App = () => {
           {
             role: "user",
             content: `Repeat exactly what is said here, and nothing else -> ${message}`,
-            // content: `Repeat what i've said here: What is 1 + 1 ?`,
           },
         ],
         max_tokens: 20,
@@ -35,6 +35,7 @@ const App = () => {
 
   const { text, startListening, stopListening, isListening } =
     useSpeechRecognition();
+
   return (
     <div className="grid place-items-center mt-8">
       <form
@@ -64,11 +65,18 @@ const App = () => {
       <button
         className="border-4 p-4"
         onClick={() => {
-          console.log(`onclick ${text}`);
-          !isListening ? startListening() : (stopListening(), getMessage(text));
+          !isListening ? startListening() : stopListening();
         }}
       >
         <img src={mic} className="w-8 fa-microphone" id="mic" />
+      </button>
+      <button
+        className="border mt-8 p-4"
+        onClick={() => {
+          getMessage(text);
+        }}
+      >
+        Get Message
       </button>
       <div className="w-64 text-center pt-8">
         {isLoading ? <p>Loading...</p> : answer ? <h1>{answer}</h1> : null}

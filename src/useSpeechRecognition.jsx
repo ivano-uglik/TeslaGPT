@@ -12,7 +12,6 @@ const useSpeechRecognition = () => {
     // setText("");
     setIsListening(true);
     recognition.start();
-    console.log(`startListening ${text}`);
   };
 
   useEffect(() => {
