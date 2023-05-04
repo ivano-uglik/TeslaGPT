@@ -9,25 +9,24 @@ const useSpeechRecognition = () => {
   const [isListening, setIsListening] = useState(false);
 
   const startListening = () => {
-    // setText("");
+    setText();
     setIsListening(true);
     recognition.start();
   };
-
-  useEffect(() => {
-    recognition.onresult = (event) => {
-      const temp = event.results[0][0].transcript;
-      setText(temp);
-      recognition.stop();
-      setIsListening(false);
-      console.log(`onresult ${temp}`);
-    };
-  }, []);
 
   const stopListening = () => {
     setIsListening(false);
     recognition.stop();
   };
+
+  useEffect(() => {
+    recognition.onresult = (event) => {
+      const transcript = event.results[0][0].transcript;
+      setText(transcript);
+      console.log(`onresult ${transcript}`);
+    };
+  }, []);
+
   return {
     text,
     isListening,

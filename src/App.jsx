@@ -2,6 +2,8 @@ import { useEffect, useState } from "react";
 import mic from "./assets/microphone.svg";
 import micSlash from "./assets/microphoneSlash.svg";
 import useSpeechRecognition from "./useSpeechRecognition";
+import tesla from "/tesla.svg";
+
 const App = () => {
   const API_KEY = import.meta.env.VITE_API_KEY;
   async function getMessage(message) {
@@ -17,10 +19,10 @@ const App = () => {
         messages: [
           {
             role: "user",
-            content: `Repeat exactly what is said here, and nothing else -> ${message}`,
+            content: `${message}`,
           },
         ],
-        max_tokens: 20,
+        max_tokens: 500,
       }),
     });
 
@@ -36,9 +38,14 @@ const App = () => {
   const { text, startListening, stopListening, isListening } =
     useSpeechRecognition();
 
+  useEffect(() => {
+    console.log(text);
+    text && getMessage(text);
+  }, [text]);
   return (
     <div className="grid place-items-center mt-8">
-      <form
+      <img src={tesla} className="w-32 p-4" />
+      {/* <form
         method="post"
         onSubmit={(event) => {
           event.preventDefault();
@@ -61,27 +68,24 @@ const App = () => {
           type="submit"
           className="p-[0.35rem] border border-black rounded-xl"
         />
-      </form>
-      <button
-        className="border-4 p-4"
-        onClick={() => {
-          !isListening ? startListening() : stopListening();
-        }}
-      >
-        <img src={mic} className="w-8 fa-microphone" id="mic" />
-      </button>
-      <button
-        className="border mt-8 p-4"
-        onClick={() => {
-          getMessage(text);
-        }}
-      >
-        Get Message
-      </button>
+      </form> */}
+      <div>
+        <button
+          className="border-4 p-4 mr-8"
+          onClick={() => {
+            !isListening ? startListening() : stopListening();
+          }}
+        >
+          {!isListening ? (
+            <img src={mic} className="w-8" id="mic" />
+          ) : (
+            <img src={micSlash} className="w-9" id="mic" />
+          )}
+        </button>
+      </div>
       <div className="w-64 text-center pt-8">
         {isLoading ? <p>Loading...</p> : answer ? <h1>{answer}</h1> : null}
         {isListening ? <div>Speaking...</div> : null}
-        <>{text}</>
       </div>
     </div>
   );
